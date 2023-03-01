@@ -26,7 +26,7 @@ export default {
 </script>
 <template>
   <div>
-    <v-app-bar elevation="1" class="!bg-base-200">
+    <v-app-bar elevation="1" class="!bg-base-200 !fixed">
       <template v-slot:image>
         <v-img></v-img>
       </template>

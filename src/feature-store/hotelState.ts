@@ -28,6 +28,11 @@ enum RoomType {
   Suite = "Suite",
 }
 
+export interface Partner {
+  isPartner: boolean;
+  voucherCode: string;
+}
+
 export interface Contract {
   tel: string;
   email: string;
@@ -79,4 +84,6 @@ export interface Hotel {
       comment: string;
     }[];
   };
+  partner: Partner
+  discountCode: string;
 }

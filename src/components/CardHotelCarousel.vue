@@ -16,7 +16,7 @@ export default {
 };
 </script>
 <template>
-  <v-sheet class="mx-auto py-4" elevation="2">
+  <v-sheet class="mx-auto py-6 bg-base-200 border-t-[1px] h-full" elevation="1">
     <article
       class="prose prose-blockquote:text-2xl prose-blockquote:text-primary-focus"
     >
@@ -32,7 +32,7 @@ export default {
         >
           <figure class="group card-hovering">
             <v-img
-            class="!fade-out"
+              class="!fade-out"
               src="https://q-xx.bstatic.com/xdata/images/hotel/max1024x768/184305239.jpg?k=4dbc2549dfba179004f2acdacceb65c7fb501f88823274ceb8397bde485209b7&o="
             >
             </v-img>
@@ -47,7 +47,10 @@ export default {
             </div>
 
             <div class="absolute invisible group-hover:visible tradition-200">
-              <v-chip text="ลองดู" class="!bg-accent-focus text-accent-content"></v-chip>
+              <v-chip
+                text="ลองดู"
+                class="!bg-accent-focus text-accent-content bg-opacity-80"
+              ></v-chip>
             </div>
 
             <div class="absolute z-10 -left-2 bottom-36">
@@ -84,8 +87,8 @@ export default {
               <pre>{{ rating }}</pre>
             </div>
             <article class="prose prose-sm">
-              <lead class="">THB 572.00</lead>
-              <figcaption class="text-gray-500 -mt-0.5">
+              <figure class="!flex justify-start">THB 572.00</figure>
+              <figcaption class="text-gray-500 -mt-5">
                 ราคาเริ่มต้นต่อคืน
               </figcaption>
             </article>
@@ -125,11 +128,11 @@ export default {
   }
 
   .fade-out:hover {
-    @apply opacity-80  duration-200
+    @apply opacity-80  duration-200;
   }
 
   .fade-out {
-    @apply opacity-100 duration-200
+    @apply opacity-100 duration-200;
   }
 }
 </style>

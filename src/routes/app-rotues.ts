@@ -9,8 +9,18 @@ import {
 import { pinia } from "../shared-store/appStore";
 import { Path, usePathState } from "../shared-store/pathState";
 
-const featuresRoutes = usePathState(pinia).$state.featurePaths;
-const routes = featuresRoutes.map((r) => ({
+const pathStore = usePathState(pinia);
+const featuresRoutes = pathStore.$state.featurePaths;
+const usrRoutes = pathStore.$state.userPaths;
+
+const fRoutes = featuresRoutes.map((r) => ({
+  path: r.path,
+  name: r.name,
+  component: () =>
+    Promise.resolve(r.component || import("../components/NotFoundApp.vue")),
+}));
+
+const userRoutes = usrRoutes.map((r) => ({
   path: r.path,
   name: r.name,
   component: () =>
@@ -25,7 +35,7 @@ export const customRoutes = [
   },
 ];
 
-routes.push(...customRoutes);
+const routes = [...customRoutes, ...userRoutes, ...fRoutes];
 const router = createRouter({
   // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
   history: createWebHashHistory(),

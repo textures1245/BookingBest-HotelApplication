@@ -1,14 +1,13 @@
 import { defineStore } from "pinia";
 
-type Review = {
+export type Review = {
   user: User;
   timestamp: Date;
   rating: number;
   comment: string;
 };
 
-type User = {
+export type User = {
   name: string;
-  profilePicture: string;
   reviews: Review[];
 };

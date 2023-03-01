@@ -11,6 +11,14 @@ import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { createPinia } from "pinia";
 
+import { initializeApp } from "firebase/app";
+
+import "@formkit/themes/genesis";
+import { plugin, defaultConfig } from "@formkit/vue";
+import { firebaseConfig } from "./firebase.config";
+
+initializeApp(firebaseConfig);
+
 const pinia = createPinia();
 
 const vuetify = createVuetify({
@@ -18,4 +26,9 @@ const vuetify = createVuetify({
   directives,
 });
 
-createApp(App).use(pinia).use(router).use(vuetify).mount("#app");
+createApp(App)
+  .use(pinia)
+  .use(router)
+  .use(vuetify)
+  .use(plugin, defaultConfig)
+  .mount("#app");
