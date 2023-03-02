@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import { getCurrentUser, useCollection, useCurrentUser } from "vuefire";
+import router from "../routes/app-rotues";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -39,10 +40,12 @@ type UserCollection = {
 export const useAuthState = defineStore("authState", {
   state: () => {
     return {
-      currAccount: <CurrentAccount>{},
+      currAccount: <CurrentAccount | null>null,
     };
   },
-  getters: {},
+  getters: {
+    getCurrAcc: (state) => (state.currAccount ? state.currAccount : null),
+  },
   actions: {
     getGeoRequest(): Promise<{ lat: number; lng: number }> {
       return new Promise((resolve, reject) => {
@@ -72,47 +75,95 @@ export const useAuthState = defineStore("authState", {
       });
     },
     async onSignUp(email: string, password: string): Promise<boolean> {
-      return createUserWithEmailAndPassword(auth, email, password).then(
-        async (userCredential) => {
+      return createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
           const useruid = userCredential.user.uid;
-          return await this.getGeoRequest().then((geo) => {
+          return await this.getGeoRequest().then(async (geo) => {
             const createAcc: UserCollection = {
               uId: useruid,
               email,
               geolocation: { lat: geo.lat, lng: geo.lng },
             };
-            return addDoc(collection(db, "Users"), createAcc)
+            return await addDoc(collection(db, "Users"), createAcc)
               .then((doc) => {
                 console.log(
                   `Added successfully on User UID: ${useruid}, docId: ${doc.id}`
                 );
+                this.currAccount = createAcc;
+                console.log(this.currAccount);
+                router.push("/app-overview");
                 return true;
               })
               .catch((err) => {
-                throw new Error("Error when saving user state", err);
+                console.error(err);
+                return false;
               });
           });
-        }
-      );
+        })
+        .catch((err) => {
+          console.error(err);
+          return false;
+        });
+    },
+
+    async onSignIn(email: string, password: string) {
+      return signInWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          if (!userCredential) {
+            console.error("user credentials not found");
+            return false;
+          }
+          const userUid = userCredential.user.uid;
+          const res = await useCollection<UserCollection>(
+            collection(db, "Users"),
+            {
+              wait: true,
+            }
+          ).promise.value.then((userDocs) => {
+            let userData = userDocs.find((u) => u.uId === userUid);
+            if (userData) {
+              this.currAccount = userData;
+              console.log(this.currAccount);
+              router.push("/app-overview");
+              return true;
+            } else return false;
+          });
+          return res;
+        })
+        .catch((err) => {
+          console.error(err);
+          return false;
+        });
     },
 
     async autoAuth(): Promise<boolean> {
       const user = await getCurrentUser();
+      console.log(user);
       if (!user) {
         console.log("Auth failed");
         return false;
       }
-      const res = await useCollection<UserCollection>(collection(db, "User"), {
+      return await useCollection<UserCollection>(collection(db, "Users"), {
         wait: true,
-      }).promise.value.then((userDocs) => {
-        let userData = userDocs.find((u) => u.uId === user.uid);
-        if (userData) {
-          this.$state.currAccount = userData;
+      })
+        .promise.value.then((userDocs) => {
+          console.log("asdsad");
+          let userData = userDocs.find((u) => u.uId === user.uid);
           console.log(userData);
-          return true;
-        } else return false;
-      });
-      return res;
+          if (userData) {
+            this.currAccount = userData;
+            console.log(this.currAccount);
+            return true;
+          } else return false;
+        })
+        .catch((err) => {
+          console.error(err);
+          return false;
+        });
+    },
+
+    setCurrentGeoLocation(lat: number, lng: number) {
+      this.getCurrAcc!.geolocation = { lat, lng };
     },
   },
 });

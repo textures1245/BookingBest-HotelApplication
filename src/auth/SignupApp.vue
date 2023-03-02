@@ -45,11 +45,12 @@ export default {
                 email: "",
                 password: "",
               };
+              this.$router.push("/app-overview");
             } else {
               Swal.fire({
                 icon: "error",
-                title: "การเข้าสูระบบผิดผลาด",
-                text: `เราไม่ตรวจพบบัญชีที่คุณกรอกไว้ ได้โปรดลองกรอกดูอีกครั้ง`,
+                title: "บัญชีนี้ผู้ใช่เป็นที่เรียบร้อยแล้ว",
+                text: `ได้โปรดลองกรอกบัญชีใหม่ดูอีกครั้ง`,
               });
             }
           })
@@ -63,8 +64,8 @@ export default {
 </script>
 <template>
   <v-container>
-    <div class="mx-auto grid grid-cols-2 place-items-center h-screen">
-      <div class="">
+    <div class="mx-auto grid lg:grid-cols-2 place-items-center h-screen">
+      <div class="absolute lg:relative">
         <v-avatar size="500">
           <v-img
             cover
@@ -75,14 +76,24 @@ export default {
         </v-avatar>
       </div>
       <div class="">
-        <v-card class="mx-auto thai-font" max-width="600" width="500">
+        <v-card
+          class="mx-auto thai-font"
+          elevation="8"
+          max-width="450"
+          width="450"
+        >
+          <v-toolbar title="สร้างบัญชี" class="!bg-secondary-focus text-white">
+            <v-btn class="!bg-secondary-content text-white" size="32">
+              <v-icon
+                icon="mdi-account"
+                class="text-secondary-focus"
+                size="26"
+              ></v-icon>
+            </v-btn>
+          </v-toolbar>
           <v-card-title
             class="text-h6 font-weight-regular justify-space-between"
           >
-            <span class="mr-2">เข้าสู่ระบบ</span>
-            <v-avatar class="!bg-primary text-white" size="32">
-              <v-icon icon="mdi-account" size="26"></v-icon>
-            </v-avatar>
           </v-card-title>
 
           <FormKit
@@ -114,12 +125,12 @@ export default {
                     value=""
                   />
                   <span class="text-caption text-grey-darken-1">
-                    ยังไม่มีบัชชีใช่ไหม?
+                    มีบัชชีอยู่แล้ว?
                     <v-btn
                       size="small"
-                      class="!btn-secondary"
-                      @click="() => $router.push('/sign-up')"
-                      >สมัครสมาชิก</v-btn
+                      class="!btn-accent"
+                      @click="() => $router.push('/sign-in')"
+                      >เข้าสู่ระบบ</v-btn
                     >
                   </span>
                 </v-card-text>
@@ -132,7 +143,7 @@ export default {
               <v-spacer></v-spacer>
               <div class="mt-5">
                 <FormKit
-                  input-class="!btn-accent"
+                  input-class="!btn-secondary"
                   message-class="text-center"
                   type="submit"
                   label="เข้าสู่ระบบ"

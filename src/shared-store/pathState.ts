@@ -19,7 +19,7 @@ export const usePathState = defineStore("pathStore", {
           title: "เข้าสู่ระบบ",
           path: "/sign-in",
           component: markRaw(
-            defineAsyncComponent(() => import("../auth/LoginApp.vue"))
+            defineAsyncComponent(async () => import("../auth/LoginApp.vue"))
           ),
         },
         {

@@ -8,7 +8,7 @@ export default {
 };
 </script>
 <template>
-  <div id="hero-section" class="h-[40vh]">
+  <div id="hero-section" class="h-[70vh]">
     <SearchHotelBar></SearchHotelBar>
     <div class="lg:flex justify-evenly items-center">
       <div class="">
@@ -21,11 +21,14 @@ export default {
               ค้นหาข้อเสนอสำหรับโรงแรม บ้านพัก และอื่น ๆ อีกมากมาย...
             </p>
             <v-card>
-              <Map></Map>
+              <Map ></Map>
             </v-card>
             <div class="flex gap-2 items-center">
               <p>ตอนนี้มีห้องอยู๋ 8 แห่งที่ใกล้คุณ</p>
-              <v-chip class="!bg-primary-focus text-primary-content cursor-pointer">ดูตอนนี้เลย</v-chip>
+              <v-chip
+                class="!bg-primary-focus text-primary-content cursor-pointer"
+                >ดูตอนนี้เลย</v-chip
+              >
             </div>
           </article>
         </v-container>

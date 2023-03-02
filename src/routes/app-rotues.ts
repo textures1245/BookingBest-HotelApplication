@@ -8,6 +8,8 @@ import {
 
 import { pinia } from "../shared-store/appStore";
 import { Path, usePathState } from "../shared-store/pathState";
+import { useAuthState } from "../auth/authState";
+import { getCurrentUser } from "vuefire";
 
 const pathStore = usePathState(pinia);
 const featuresRoutes = pathStore.$state.featurePaths;
@@ -18,6 +20,7 @@ const fRoutes = featuresRoutes.map((r) => ({
   name: r.name,
   component: () =>
     Promise.resolve(r.component || import("../components/NotFoundApp.vue")),
+  meta: { requiresAuth: true },
 }));
 
 const userRoutes = usrRoutes.map((r) => ({
@@ -25,6 +28,7 @@ const userRoutes = usrRoutes.map((r) => ({
   name: r.name,
   component: () =>
     Promise.resolve(r.component || import("../components/NotFoundApp.vue")),
+  meta: { requiresAuth: false },
 }));
 
 export const customRoutes = [
@@ -32,6 +36,7 @@ export const customRoutes = [
     name: "overview",
     path: "/app-overview",
     component: () => import("../features/OverviewApp.vue"),
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -42,7 +47,14 @@ const router = createRouter({
   routes, // short for `routes: routes`
 });
 
-router.beforeEach((to, from, next) => {
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return next("/sign-in");
+    }
+  }
   if (to.matched.length === 0) {
     return next("/app-overview");
   }

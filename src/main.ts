@@ -10,14 +10,15 @@ import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { createPinia } from "pinia";
+import { VueFire, VueFireAuth } from "vuefire";
 
 import { initializeApp } from "firebase/app";
 
 import "@formkit/themes/genesis";
 import { plugin, defaultConfig } from "@formkit/vue";
-import { firebaseConfig } from "./firebase.config";
+import { firebaseApp, firebaseConfig } from "./firebase.config";
 
-initializeApp(firebaseConfig);
+const app = createApp(App);
 
 const pinia = createPinia();
 
@@ -26,9 +27,20 @@ const vuetify = createVuetify({
   directives,
 });
 
-createApp(App)
-  .use(pinia)
-  .use(router)
-  .use(vuetify)
-  .use(plugin, defaultConfig)
-  .mount("#app");
+app.use(VueFire, {
+  // imported above but could also just be created here
+  firebaseApp,
+  modules: [
+    // we will see other modules later on
+    VueFireAuth(),
+  ],
+});
+
+app.use(pinia);
+app.use(router);
+app.use(plugin, defaultConfig);
+app.use(vuetify);
+
+router.isReady().then(() => {
+  app.mount("#app");
+});

@@ -22,7 +22,7 @@ export default {
       const onLoaded = new Promise((r) => setTimeout(r, 1000));
       onLoaded.then(() => {
         useAuthState()
-          .onSignUp(this.accountData.email, this.accountData.password)
+          .onSignIn(this.accountData.email, this.accountData.password)
           .then((isAuthValid) => {
             if (isAuthValid) {
               const Toast = Swal.mixin({
@@ -63,16 +63,25 @@ export default {
 </script>
 <template>
   <v-container>
-    <div class="mx-auto grid lg:grid-cols-2 place-items-center h-screen">
+    <div
+      class="mx-auto grid grid-cols-1 lg:grid-cols-2 place-items-center h-screen"
+    >
       <div class="z-10">
-        <v-card class="mx-auto thai-font" max-width="600" width="500">
+        <v-card
+          class="mx-auto thai-font"
+          elevation="8"
+          max-width="450"
+          width="450"
+        >
+          <v-toolbar title="เข้าสู่ระบบ" class="!bg-primary-focus text-white">
+            <v-spacer></v-spacer>
+            <v-btn class="!bg-primary text-white" size="32">
+              <v-icon icon="mdi-account" size="26"></v-icon>
+            </v-btn>
+          </v-toolbar>
           <v-card-title
             class="text-h6 font-weight-regular justify-space-between"
           >
-            <span class="mr-2">เข้าสู่ระบบ</span>
-            <v-avatar class="!bg-primary text-white" size="32">
-              <v-icon icon="mdi-account" size="26"></v-icon>
-            </v-avatar>
           </v-card-title>
 
           <FormKit
@@ -122,7 +131,7 @@ export default {
               <v-spacer></v-spacer>
               <div class="mt-5">
                 <FormKit
-                  input-class="!btn-accent"
+                  input-class="!btn-primary"
                   message-class="text-center"
                   type="submit"
                   label="เข้าสู่ระบบ"
@@ -132,7 +141,7 @@ export default {
           </FormKit>
         </v-card>
       </div>
-      <div class="z-0">
+      <div class="z-0 absolute lg:relative">
         <v-avatar size="500">
           <v-img
             cover
