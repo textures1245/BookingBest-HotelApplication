@@ -28,11 +28,9 @@ function init() {
     const currUser = useAuthState().getCurrAcc;
     if (currUser) {
       let { lon, lat } = map.location();
-      console.log(lon, lat);
       useAuthState().setCurrentGeoLocation(lon, lat);
     }
   }, 1000);
-  console.log(map.location());
 }
 onMounted(() => {
   init();

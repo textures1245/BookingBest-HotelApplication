@@ -174,7 +174,7 @@ export const useHotelState = defineStore("hotelState", {
           partner: {
             isPartner: false,
             voucherCode: Math.random().toString(20).substring(2, 8),
-            discount: Math.floor(Math.random() * 5) + 10,
+            discount: (Math.floor(Math.random() * 5) + 1) * 10,
           },
           services: {
             hasOwnParking: hotelJson.hasOwnParking,
