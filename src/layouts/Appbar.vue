@@ -2,6 +2,8 @@
 import { Path } from "../shared-store/pathState";
 import { usePathState } from "../shared-store/pathState";
 import { customRoutes } from "../routes/app-rotues";
+import { useAuthState } from "../auth/authState";
+import Swal from "sweetalert2";
 export default {
   setup() {
     return {
@@ -21,6 +23,49 @@ export default {
         overviewRoute: customRoutes[0],
       },
     };
+  },
+
+  methods: {
+    onSignOut() {
+      useAuthState()
+        .onSignOut()
+        .then((signOut) => {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast: any) => {
+              toast.addEventListener("mouseenter", Swal.stopTimer);
+              toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+          });
+
+          Toast.fire({
+            icon: "success",
+            title: "ออกจากระบบแล้ว",
+          });
+        })
+        .catch((error) => {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast: any) => {
+              toast.addEventListener("mouseenter", Swal.stopTimer);
+              toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+          });
+
+          Toast.fire({
+            icon: "error",
+            title: "ล้นเหลวในการออกจากระบบ",
+          });
+        });
+    },
   },
 };
 </script>
@@ -52,7 +97,11 @@ export default {
 
       <v-spacer></v-spacer>
 
-      <v-btn class="!text-primary-focus" v-for="fp in featurePaths">
+      <v-btn
+        :to="fp.path"
+        class="!text-primary-focus"
+        v-for="fp in featurePaths"
+      >
         <div class="flex items-center gap-1">
           <v-icon class="!text-primary-focus" :icon="fp.icon"></v-icon>
           <span class="text-caption flex mx-auto">
@@ -78,6 +127,11 @@ export default {
               <router-link :to="userPath.path">
                 <v-list-item-title>{{ userPath.title }}</v-list-item-title>
               </router-link>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title @click="() => onSignOut()"
+                >ออกจากระบบ</v-list-item-title
+              >
             </v-list-item>
           </v-list>
         </v-menu>

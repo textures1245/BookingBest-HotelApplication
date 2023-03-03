@@ -162,6 +162,16 @@ export const useAuthState = defineStore("authState", {
         });
     },
 
+    async onSignOut() {
+      return signOut(auth)
+        .then(() => {
+          return true;
+        })
+        .catch((error) => {
+          throw new Error(error);
+        });
+    },
+
     setCurrentGeoLocation(lat: number, lng: number) {
       this.getCurrAcc!.geolocation = { lat, lng };
     },
