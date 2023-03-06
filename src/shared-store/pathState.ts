@@ -3,13 +3,17 @@ import { defineAsyncComponent, markRaw } from "vue";
 
 export type Path = {
   icon?: string;
-  title: string;
+  title?: string;
   name: string;
   path: string;
   component?: Function;
+  children?: {
+    path: string;
+    component: Function;
+  }[];
 };
 
-export const usePathState = defineStore("pathStore", {
+export const usePathState = defineStore("pathState", {
   state: () => {
     return {
       userPaths: <Path[]>[
@@ -48,7 +52,9 @@ export const usePathState = defineStore("pathStore", {
           title: "บันทึกรายการ",
           path: "/hotel-book-list",
           component: markRaw(
-            defineAsyncComponent(() => import("../features/BookListApp.vue"))
+            defineAsyncComponent(
+              () => import("../features/BookListRecordApp.vue")
+            )
           ),
         },
 
@@ -59,11 +65,13 @@ export const usePathState = defineStore("pathStore", {
           path: "/hotel-broad-forum",
           component: markRaw(
             defineAsyncComponent(
-              () => import("../features/BookBoardForumApp.vue")
+              () => import("../features/BoardForumApp.vue")
             )
           ),
         },
       ],
     };
   },
+  getters: {},
+  actions: {},
 });

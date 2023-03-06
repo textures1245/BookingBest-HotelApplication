@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import hotelJSON from "../assets/json/hotels.json";
+import districtJSON from "../assets/json/district.json";
+import hotelJSON from "../assets/json/้hotels2.json";
 import { Review, User } from "./userState";
 
 // Modes
@@ -10,6 +11,13 @@ export type Address = {
   postalCode: string | number;
   moo: string | number;
   geo: Geolocation;
+};
+
+export type DistrictCollection = {
+  id: number;
+  district: string;
+  lat: number;
+  lng: number;
 };
 
 type Rating = {
@@ -47,37 +55,6 @@ export type ServiceFeatures = {
   petsAllowed: boolean;
 };
 
-// export type Hotel = {
-//   hotelId: string;
-//   geo: Geolocation;
-//   name: string;
-//   description: string;
-//   address: Address;
-//   checkIn: Date;
-//   checkOut: Date;
-//   roomFeatures: RoomFeature[];
-//   restaurantServiceTimes?: ("breakfast" | "lunch" | "dinner" | "none")[];
-//   price: number;
-//   imageUrls: string[];
-//   services: ServiceFeatures;
-//   placeNameNearBy?: string;
-//   occupancy: {
-//     adults: number;
-//     children: number;
-//   };
-//   telContract: string;
-//   rating: {
-//     stars: number;
-//     reviews: {
-//       user: User;
-//       date: Date;
-//       rating: number;
-//       comment: string;
-//     }[];
-//   };
-//   partner: Partner;
-// };
-
 export type Hotel = {
   hotelId: number;
   name: string;
@@ -103,7 +80,9 @@ export type Hotel = {
   rating: Rating;
 };
 
-const hotelJson: any[] = [hotelJSON];
+export type HotelSearcher = {
+  formRefDistract: number;
+} & Hotel;
 
 function randImage(amount: number) {
   const images = [
@@ -130,7 +109,21 @@ function randImage(amount: number) {
 export const useHotelState = defineStore("hotelState", {
   state() {
     return {
-      hotels: <Hotel[]>hotelJSON.map((hotelJson: any) => {
+      searchMode: false,
+      cityGeo: { lat: 18.86573608, lng: 99.03157315 },
+      lastSearchHotelState: <HotelSearcher[]>[],
+      districts: <DistrictCollection[]>[...districtJSON],
+      hotels: <Hotel[]>[],
+    };
+  },
+  getters: {
+    getHotelState: (state) => state.hotels,
+    getDistrictState: (state) => state.districts,
+  },
+  actions: {
+    setHotelState() {
+      //- it should be called once when app is initialized
+      const initialHotelState = <Hotel[]>hotelJSON.map((hotelJson: any) => {
         return {
           hotelId: hotelJson.hotelId,
           name: hotelJson.name,
@@ -156,14 +149,14 @@ export const useHotelState = defineStore("hotelState", {
           roomFeature: {
             size: hotelJson.size,
             bedType: hotelJson.bedType as RoomFeature["bedType"],
-            generalItems: hotelJson.generalItems.split(", "),
-            bathroomItems: hotelJson.bathroomItems.split(", "),
-            bedroomItems: hotelJson.bedroomItems.split(", "),
-            techItems: hotelJson.techItems.split(", "),
-            internetItems: hotelJson.internetItems.split(", "),
-            viewItems: hotelJson.viewItems.split(", "),
-            kitchenItems: hotelJson.kitchenItems.split(", "),
-            securityItems: hotelJson.securityItems.split(", "),
+            generalItems: hotelJson.generalItems.split(" "),
+            bathroomItems: hotelJson.bathroomItems.split(" "),
+            bedroomItems: hotelJson.bedroomItems.split(" "),
+            techItems: hotelJson.techItems.split(" "),
+            internetItems: hotelJson.internetItems.split(" "),
+            viewItems: hotelJson.viewItems.split(" "),
+            kitchenItems: hotelJson.kitchenItems.split(" "),
+            securityItems: hotelJson.securityItems.split(" "),
           },
           petsAllowed: hotelJson.petsAllowed,
           placeNameNearByArr: hotelJson.placeNameNearBy.split(" "),
@@ -172,7 +165,7 @@ export const useHotelState = defineStore("hotelState", {
             tel: hotelJson.telContract,
           },
           partner: {
-            isPartner: false,
+            isPartner: !!Math.floor(Math.random() * 2),
             voucherCode: Math.random().toString(20).substring(2, 8),
             discount: (Math.floor(Math.random() * 5) + 1) * 10,
           },
@@ -185,13 +178,76 @@ export const useHotelState = defineStore("hotelState", {
             stars: Math.floor(Math.random() * 5) + 1,
             reviews: [] as Review[],
           },
-          imgUrls: randImage(6),
+          imgUrls: randImage(5),
         };
-      }),
-    };
+      });
+      this.hotels = initialHotelState;
+      console.log("initial state!");
+    },
+    setSearchMode(isSearch: boolean) {
+      this.searchMode = isSearch;
+    },
+    setLastSearchedHotelState(hotel: Hotel[], distances: number[]) {
+      this.lastSearchHotelState = <HotelSearcher[]>hotel.map((h, index) => {
+        return {
+          ...h,
+          formRefDistract: distances[index],
+        };
+      });
+    },
+    resetLastSearchedHotelState() {
+      this.lastSearchHotelState = <HotelSearcher[]>[];
+    },
+
+    getNearestHotel(
+      mainGeo: { lat: number; lng: number },
+      limit: number,
+      kiloRange: number,
+      fromHotelSamples?: Hotel[]
+    ) {
+      const nearestHotels = [];
+      const distances = [];
+      let hotelsToCheck: Hotel[] = [];
+
+      //- check from the hotel sample we provided, otherwise check all
+      if (fromHotelSamples !== undefined) {
+        hotelsToCheck = fromHotelSamples;
+      } else {
+        hotelsToCheck = this.hotels;
+      }
+
+      for (
+        let i = 0;
+        i < hotelsToCheck.length && nearestHotels.length < limit;
+        i++
+      ) {
+        const h = hotelsToCheck[i];
+        let theta = mainGeo.lng - h.address.geo.lng;
+        let distance =
+          60 *
+          1.1515 *
+          (180 / Math.PI) *
+          Math.acos(
+            Math.sin(mainGeo.lat * (Math.PI / 180)) *
+              Math.sin(h.address.geo.lat * (Math.PI / 180)) +
+              Math.cos(mainGeo.lat * (Math.PI / 180)) *
+                Math.cos(h.address.geo.lat * (Math.PI / 180)) *
+                Math.cos(theta * (Math.PI / 180))
+          );
+        let kilometers = Math.round(distance * 1.609344);
+        if (kilometers < kiloRange) {
+          nearestHotels.push(h);
+          distances.push(kilometers);
+        }
+      }
+      const [minDistance, maxDistance] = distances.reduce(
+        ([min, max], distance) => [
+          Math.min(min, distance),
+          Math.max(max, distance),
+        ],
+        [Infinity, -Infinity]
+      );
+      return { nearestHotels, distances, minDistance, maxDistance };
+    },
   },
-  getters: {
-    getHotelState: (state) => state.hotels,
-  },
-  actions: {},
 });

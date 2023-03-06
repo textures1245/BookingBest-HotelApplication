@@ -1,12 +1,12 @@
 <script lang="ts">
-import ForumDrawer from "../layouts/ForumDrawer.vue";
+import UserDrawer from "../layouts/UserBookDrawer.vue";
 export default {
-  components: { ForumDrawer },
+  components: { UserDrawer },
 };
 </script>
 <template>
   <div>
-    <ForumDrawer>
+    <UserDrawer>
       <template #main>
         <v-main class="w-full flex justify-center">
           <v-container>
@@ -16,7 +16,7 @@ export default {
           </v-container>
         </v-main>
       </template>
-    </ForumDrawer>
+    </UserDrawer>
   </div>
 </template>
 <style lang=""></style>

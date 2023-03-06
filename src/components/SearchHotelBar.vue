@@ -1,19 +1,99 @@
 <script lang="ts">
+import { DistrictCollection, useHotelState } from "../feature-store/hotelState";
+import Swal from "sweetalert2";
+
 export default {
+  setup() {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+      },
+    });
+
+    return {
+      districtState: useHotelState().getDistrictState,
+      hotelState: useHotelState().getHotelState,
+      Toast,
+    };
+  },
   data: () => ({
-    loaded: false,
+    searchFilter: {
+      district: <DistrictCollection>{},
+      guests: {
+        adults: 0,
+        children: 0,
+      },
+    },
     loading: false,
     expand: false,
   }),
 
   methods: {
-    onClick() {
+    onSearch() {
       this.loading = true;
+      new Promise((r) => setTimeout(r, 1000)).then(() => {
+        if (!this.searchFilter.district.district) {
+          this.Toast.fire({
+            icon: "error",
+            title: "ได้โปรดกรอกอำเภอที่ต้องการไปของคุณ",
+          });
+          this.loading = false;
+          return;
+        } else {
+          const districtSelected = this.districtState.find(
+            (d) => d.district === this.searchFilter.district.district
+          );
 
-      setTimeout(() => {
-        this.loading = false;
-        this.loaded = true;
-      }, 2000);
+          if (districtSelected) {
+            this.searchFilter = {
+              ...this.searchFilter,
+              district: { ...districtSelected! },
+            };
+
+            const hotelSearchFilter = this.hotelState.filter((h) => {
+              if (
+                h.address.district === this.searchFilter.district.district &&
+                this.searchFilter.guests.adults <= h.guests.adults &&
+                this.searchFilter.guests.children <= h.guests.children
+              )
+                return h;
+            });
+
+            if (hotelSearchFilter.length > 0) {
+              console.log(hotelSearchFilter);
+              const { nearestHotels, distances } =
+                useHotelState().getNearestHotel(
+                  {
+                    lat: districtSelected.lat,
+                    lng: districtSelected.lng,
+                  },
+                  40,
+                  100,
+                  hotelSearchFilter
+                );
+              useHotelState().setSearchMode(true);
+              useHotelState().setLastSearchedHotelState(
+                nearestHotels,
+                distances
+              );
+              setTimeout(() => this.$router.push("/hotel-list"), 1000);
+            } else {
+              this.Toast.fire({
+                icon: "warning",
+                title: "ขออภัย เราไม่ค้นพบห้องพักตามเงื่อนไขของคุณโปรดลองใหม่",
+              });
+              this.loading = false;
+              return;
+            }
+          }
+        }
+      });
     },
   },
 };
@@ -43,20 +123,22 @@ export default {
           }"
           class="!w-full z-10 fixed mt-10 lg:!w-6/12 flex right-0"
         >
-          <v-text-field
-            class="bg-secondary"
-            color="primary"
+          <v-select
+            class="bg-secondary !text-white"
             :loading="loading"
             density="comfortable"
             variant="filled"
+            v-model="searchFilter.district.district"
             label="ที่พักหรืออำเภอ"
+            :items="districtState.map((d) => d.district)"
             prepend-inner-icon="mdi-bed"
             hide-details
-          ></v-text-field>
+          ></v-select>
           <v-dialog transition="dialog-top-transition" width="auto">
             <template v-slot:activator="{ props }">
               <v-text-field
                 v-bind="props"
+                :value="`ผู้ใหญ่ ${searchFilter.guests.adults} เด็ก ${searchFilter.guests.children} `"
                 class="!bg-primary !text-primary-content !cursor-pointer"
                 readonly
                 :loading="loading"
@@ -65,14 +147,14 @@ export default {
                 label="เลือกจำนวนผู้พัก"
                 prepend-inner-icon="mdi-account-group"
                 hide-details
-                @click:append-inner="onClick"
               >
                 <template v-slot:append-inner>
                   <div>
-                    <v-tooltip location="bottom"  text="ค้นหาห้อง">
+                    <v-tooltip location="bottom" text="ค้นหาห้อง">
                       <template v-slot:activator="{ props }">
                         <v-icon
-                        v-bind="props"
+                          @click="() => onSearch()"
+                          v-bind="props"
                           icon="mdi-home-search"
                           class="!cursor-pointer"
                         ></v-icon>
@@ -93,12 +175,18 @@ export default {
                     <div class="place-self-center font-semibold">ผู้ใหญ่</div>
                     <div class="place-self-center">
                       <div class="place-self-center">
-                        <FormKit type="number"></FormKit>
+                        <FormKit
+                          v-model="searchFilter.guests.adults"
+                          type="number"
+                        ></FormKit>
                       </div>
                     </div>
                     <div class="place-self-center font-semibold">เด็ก</div>
                     <div class="place-self-center">
-                      <FormKit type="number"></FormKit>
+                      <FormKit
+                        v-model="searchFilter.guests.children"
+                        type="number"
+                      ></FormKit>
                     </div>
                   </div>
                 </v-card-text>

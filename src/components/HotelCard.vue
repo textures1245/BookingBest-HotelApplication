@@ -1,6 +1,11 @@
 <script lang="ts">
 import { PropType } from "vue";
-import { Hotel, ServiceFeatures } from "../feature-store/hotelState";
+import {
+  Hotel,
+  HotelSearcher,
+  ServiceFeatures,
+} from "../feature-store/hotelState";
+import { Timestamp } from "@firebase/firestore";
 
 export type HotelCardType = {
   title: string;
@@ -18,22 +23,15 @@ export type HotelCardType = {
 
 export default {
   props: {
-    path: Object,
-    buttonText: String,
-    helpDetail: String,
-    colorText: String,
-    imgSrcArr: Array,
-    axis: String,
-    width: String,
-    height: String,
-    title: String,
-    title2: String,
-    subTitle: String,
-    subTitleArr: Array,
     hotelModel: {
-      type: Object as PropType<Hotel>,
+      type: Object as PropType<HotelSearcher | Hotel>,
       required: true,
     },
+    cardType: {
+      type: String as PropType<"Visit" | "Booked" | "History">,
+      required: true,
+    },
+    rentedDate: Object as PropType<Timestamp>,
   },
 
   computed: {
@@ -60,8 +58,37 @@ export default {
       }
       return order;
     },
-  },
 
+    genToolbarValue() {
+      let toolbar = {
+        icon: "",
+        title: "",
+      };
+      if (this.cardType == "Visit") {
+        toolbar = {
+          icon: "mdi-clock",
+          title: "มาใหม่ล่าสุด",
+        };
+        return toolbar;
+      } else if (this.cardType === "Booked") {
+        toolbar = {
+          icon: "mdi-heart",
+          title:
+            "บันทึกแล้วแล้วเมื่อวันที่ " +
+            (this.rentedDate! as Timestamp).toDate().toLocaleDateString(),
+        };
+        return toolbar;
+      } else {
+        toolbar = {
+          icon: "mdi-history",
+          title:
+            "จองแล้วเมื่อวันที่ " +
+            (this.rentedDate! as Timestamp).toDate().toLocaleDateString(),
+        };
+        return toolbar;
+      }
+    },
+  },
   data() {
     return {
       model: 0,
@@ -70,14 +97,32 @@ export default {
 };
 </script>
 <template>
-  <v-card elevation="2">
-    <v-toolbar  class="!bg-secondary-focus" density="compact">
-        <template v-slot:prepend>
-            <v-icon icon="mdi-clock" color="white"></v-icon>
-        </template>
-        <template v-slot:title>
-            <h1 class="text-white">มาใหม่ล่าสุด</h1>
-        </template>
+  <v-card
+    elevation="2"
+    class="!duration-300 transition hover:shadow-xl hover:-translate-y-3"
+  >
+    <v-toolbar
+      :class="{
+        '!bg-secondary-focus': cardType === 'Visit',
+        '!bg-accent-focus': cardType === 'Booked',
+        '!bg-primary-focus': cardType === 'History',
+      }"
+      density="compact"
+    >
+      <template v-slot:prepend>
+        <v-icon :icon="genToolbarValue.icon" color="white"> </v-icon>
+      </template>
+      <template v-slot:title>
+        <h1 class="text-white">{{ genToolbarValue.title }}</h1>
+      </template>
+      <template v-if="hotelModel.partner.isPartner" v-slot:append>
+        <v-chip
+          append-icon="mdi-star-circle"
+          text="ห้องพักนี้เป็นพาร์ทเนอร์"
+          color="white"
+        >
+        </v-chip>
+      </template>
     </v-toolbar>
     <div class="!h-80 grid grid-cols-8">
       <div class="col-span-3">
@@ -150,11 +195,16 @@ export default {
             <div class="mt-2 flex flex-col gap-1">
               <p class="text-xs text-accent flex items-center gap-1">
                 <v-icon icon="mdi-city"></v-icon>
-                ห่างจากตัวเมือง 24 กิโลเมตร
+                ห่างจากตัวเมือง
+                {{ Math.floor(Math.random() * 20) + 5 }} กิโลเมตร
               </p>
-              <p class="text-xs !text-primary flex items-center gap-1">
+              <p
+                v-if="(hotelModel as HotelSearcher)?.formRefDistract"
+                class="text-xs !text-primary flex items-center gap-1"
+              >
                 <v-icon icon="mdi-map-marker"></v-icon>
-                ห่างจากจุดที่อ้างอิง 12 กิโลเมตร
+                ห่างจากจุดที่อ้างอิง
+                {{ (hotelModel as HotelSearcher).formRefDistract }} กิโลเมตร
               </p>
             </div>
 
@@ -238,12 +288,37 @@ export default {
                 ></v-btn>
               </template>
             </v-tooltip>
+            <v-tooltip
+              location="top"
+              v-if="!!hotelModel.guests.adults"
+              :text="'ผู้ใหญ่ ' + hotelModel.guests.adults.toString()"
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  class="bg-base-200"
+                  v-bind="props"
+                  size="x-small"
+                  icon="mdi-account-tie"
+                ></v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip
+              location="top"
+              v-if="!!hotelModel.guests.children"
+              :text="'เด็ก ' + hotelModel.guests.children.toString()"
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  class="bg-base-200"
+                  v-bind="props"
+                  size="x-small"
+                  icon="mdi-account"
+                ></v-btn>
+              </template>
+            </v-tooltip>
           </div>
         </v-sheet>
       </v-card>
-      <!-- <p v-if="subTitle" class="text-base indent-10 break-words">
-        {{ subTitle }}
-      </p> -->
       <div class="col-span-2">
         <div class="h-80 w-full grid grid-rows-2">
           <section id="review" class="flex place-content-end m-2">
@@ -258,11 +333,24 @@ export default {
               </template>
               <div class="flex flex-col items-end">
                 <p class="text-xl">{{ reviewOrder }}</p>
-                <p>{{ hotelModel.rating.reviews.length }} ความคิดเห็น</p>
+                <v-rating
+                  color="yellow-darken-3"
+                  v-model="hotelModel.rating.stars"
+                  readonly
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
               </div>
             </v-btn>
           </section>
           <section id="price" class="place-self-end m-2">
+            <div class="flex justify-end mb-2">
+              <v-btn
+                :to="`/hotel-list/${hotelModel.hotelId}`"
+                class="!bg-accent !text-white"
+                >เยี่ยมชม</v-btn
+              >
+            </div>
             <div class="">
               <div class="stat-value font-light text-3xl text-success">
                 ฿{{ hotelModel.price }}.00
@@ -275,13 +363,3 @@ export default {
     </div>
   </v-card>
 </template>
-<!-- <div id="bottom-toolbar" class="card-actions h-full !items-end justify-end">
-  <router-link v-if="path?.link" :to="path?.link" rel="">
-    <button class="btn btn-primary">
-      {{ buttonText || "เรียนรู้เพิ่มเดิม" }}
-    </button>
-  </router-link>
-  <button v-else class="btn btn-primary">
-    {{ buttonText || "เรียนรู้เพิ่มเดิม" }}
-  </button>
-</div> -->

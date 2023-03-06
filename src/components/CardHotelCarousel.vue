@@ -4,38 +4,55 @@ import { Hotel } from "../feature-store/hotelState";
 
 export default {
   props: {
-    itemArr: {
+    border: {
+      type: Boolean,
+      default: false,
+    },
+    title: String,
+    hotelProps: {
       type: Object as PropType<Hotel[]>,
       // required: true,
     },
+    distance: Array as PropType<number[]>,
   },
   data: () => ({
     model: null,
     rating: 3.5,
   }),
+  methods: {
+    onVisitedHotel(hotelId: number) {
+      this.$router
+        .push(`/hotel-list`)
+        .then(() => this.$router.push(`/hotel-list/${hotelId}`));
+    },
+  },
 };
 </script>
 <template>
-  <v-sheet class="mx-auto py-6 bg-base-200 border-t-[1px] h-full" elevation="1">
+  <v-sheet
+    :class="border ? 'bg-base-200 !rounded-t-[1px]' : ''"
+    class="mx-auto py-6 h-full"
+    :elevation="border ? 6 : 0"
+  >
     <article
       class="prose prose-blockquote:text-2xl prose-blockquote:text-primary-focus"
     >
       <blockquote class="w-8/12 lg:w-10/12 mx-auto">
-        ค้นหาฟีเจอร์ที่ดีที่สด
+        {{ title || "รายการ" }}
       </blockquote>
     </article>
     <v-slide-group v-model="model" class="pa-4" start-active show-arrows>
-      <v-slide-group-item v-for="n in 8" v-slot="{ isSelected, toggle }">
+      <v-slide-group-item
+        v-for="(hotel, i) in hotelProps"
+        :key="hotel.hotelId"
+        v-slot="{ isSelected, toggle }"
+      >
         <div
           @click="toggle"
-          class="card card-compact w-64 lg:w-80 shadow-md mx-3 my-2"
+          class="hover:shadow-xl duration-300 card card-compact w-64 h-96 lg:w-80 shadow-md mx-3 my-2"
         >
           <figure class="group card-hovering">
-            <v-img
-              class="!fade-out"
-              src="https://q-xx.bstatic.com/xdata/images/hotel/max1024x768/184305239.jpg?k=4dbc2549dfba179004f2acdacceb65c7fb501f88823274ceb8397bde485209b7&o="
-            >
-            </v-img>
+            <v-img class="!fade-out" cover :src="hotel.imgUrls[0]"> </v-img>
             <div class="absolute z-10 right-2 top-2">
               <v-chip
                 prepend-icon="mdi-fire-circle"
@@ -48,15 +65,15 @@ export default {
 
             <div class="absolute invisible group-hover:visible tradition-200">
               <v-chip
-                text="ลองดู"
-                class="!bg-accent-focus text-accent-content bg-opacity-80"
+                @click="() => onVisitedHotel(hotel.hotelId)"
+                text="เยี่ยมชม"
+                class="cursor-pointer !bg-accent-focus text-accent-content bg-opacity-80"
               ></v-chip>
             </div>
-
-            <div class="absolute z-10 -left-2 bottom-36">
+            <div class="absolute z-10 -left-2 top-32">
               <v-chip
                 prepend-icon="mdi-fire-circle"
-                text="ประหยัด 20%"
+                :text="`ประหยัด ${hotel.partner.discount}%`"
                 class="!bg-primary text-primary-content rounded-l-none"
                 size="small"
               >
@@ -64,57 +81,42 @@ export default {
             </div>
           </figure>
           <div class="card-body">
-            <div class="flex gap-1 items-center">
-              <h2 class="text-lg">Hotel name</h2>
+            <div class="flex flex-col gap-1 items-start">
+              <h3 class="text-base">{{ hotel.name }}</h3>
               <v-chip
                 class="!bg-slate-50 !flex"
                 size="x-small"
                 prepend-icon="mdi-map-marker"
-                text="สุขุมวิท,กรุงเทพ"
+                :text="`${hotel.address.district}, ${hotel.address.subDistrict}`"
               >
               </v-chip>
             </div>
-            <div class="flex gap-2">
-              <v-rating
-                readonly
-                class="!text-accent-focus"
-                size="small"
-                v-model="rating"
-                hover
-                density="compact"
-                half-increments
-              ></v-rating>
-              <pre>{{ rating }}</pre>
+            <div class="flex flex-col gap-6">
+              <div class="flex gap-2">
+                <v-rating
+                  readonly
+                  class="!text-accent-focus"
+                  size="small"
+                  v-model="hotel.rating.stars"
+                  hover
+                  density="compact"
+                  half-increments
+                ></v-rating>
+                <pre>{{ hotel.rating.stars }}</pre>
+              </div>
+
+              <p v-if="distance" class="text-gray-500 -mt-5 text-sm">
+                ห่างออกไป {{ distance[i] }} กิโลเมตร
+              </p>
             </div>
             <article class="prose prose-sm">
-              <figure class="!flex justify-start">THB 572.00</figure>
-              <figcaption class="text-gray-500 -mt-5">
+              <figure class="!flex justify-start">THB {{ hotel.price }}</figure>
+              <figcaption class="text-gray-500 -mt-6">
                 ราคาเริ่มต้นต่อคืน
               </figcaption>
             </article>
-            <!-- <div class="card-actions justify-end">
-              <button class="btn btn-primary">Buy Now</button>
-            </div> -->
           </div>
         </div>
-        <!-- <v-card
-          :color="isSelected ? 'primary' : 'grey-lighten-1'"
-          class="ma-4"
-          height="200"
-          width="100"
-          @click="toggle"
-        >
-          <div class="d-flex fill-height align-center justify-center">
-            <v-scale-transition>
-              <v-icon
-                v-if="isSelected"
-                color="white"
-                size="48"
-                icon="mdi-close-circle-outline"
-              ></v-icon>
-            </v-scale-transition>
-          </div>
-        </v-card> -->
       </v-slide-group-item>
     </v-slide-group>
   </v-sheet>

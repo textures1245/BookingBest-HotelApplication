@@ -4,6 +4,7 @@ import { usePathState } from "../shared-store/pathState";
 import { customRoutes } from "../routes/app-rotues";
 import { useAuthState } from "../auth/authState";
 import Swal from "sweetalert2";
+import { useHotelState } from "../feature-store/hotelState";
 export default {
   setup() {
     return {
@@ -13,6 +14,7 @@ export default {
         logo: "mdi-home-map-marker",
         accountIcon: "mdi-account",
       },
+      districtState: useHotelState().getDistrictState,
     };
   },
   data() {
@@ -46,6 +48,7 @@ export default {
             icon: "success",
             title: "ออกจากระบบแล้ว",
           });
+          this.$router.push("/sign-in");
         })
         .catch((error) => {
           const Toast = Swal.mixin({
@@ -99,10 +102,10 @@ export default {
 
       <v-btn
         :to="fp.path"
-        class="!text-primary-focus"
+        class="!text-primary-focus mr-2"
         v-for="fp in featurePaths"
       >
-        <div class="flex items-center gap-1">
+        <div class="flex items-center">
           <v-icon class="!text-primary-focus" :icon="fp.icon"></v-icon>
           <span class="text-caption flex mx-auto">
             {{ fp.title }}
@@ -129,7 +132,9 @@ export default {
               </router-link>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title @click="() => onSignOut()"
+              <v-list-item-title
+                class="cursor-pointer"
+                @click="() => onSignOut()"
                 >ออกจากระบบ</v-list-item-title
               >
             </v-list-item>

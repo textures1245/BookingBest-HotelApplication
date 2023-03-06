@@ -1,44 +1,54 @@
 <script lang="ts">
+// @ts-nocheck
 import { useAuthState } from "../auth/authState";
+import { PropType, onMounted } from "vue";
+
 export default {
+  setup() {
+    var map = new longdo.Map({
+      placeholder: document.getElementById("map"),
+    });
+    function init(
+      zoomNum: number,
+      geo?: { lat: number; lng: number } | undefined
+    ) {
+      map = new longdo.Map({
+        placeholder: document.getElementById("map"),
+      });
+      map.zoom(zoomNum, true);
+      var TagPanel2 = new longdo.TagPanel({ tag: ["mountain"] });
+      map.Ui.add(TagPanel2);
+
+      if (geo !== undefined) {
+        map.Overlays.add(new longdo.Marker({ lon: geo.lng, lat: geo.lat }));
+        map.location({ lon: geo.lng, lat: geo.lat }, true);
+      } else {
+        map.location(longdo.LocationMode.Geolocation);
+      }
+
+    }
+    return { map, init };
+  },
   props: {
+    action: {
+      type: String as PropType<"currentGeo" | "customGeo">,
+      required: true,
+    },
     userGeo: Object as PropType<{ lat: number; lng: number }>,
     hSizeClass: {
       type: String,
     },
   },
+  mounted() {
+    if (this.action === "currentGeo") {
+      this.init(5);
+    } else {
+      this.init(16, { lat: this.userGeo!.lat, lng: this.userGeo!.lng });
+    }
+  },
 };
 </script>
-<script setup lang="ts">
-import { PropType, onMounted } from "vue";
-
-const map = new longdo.Map({
-  placeholder: document.getElementById("map"),
-  zoom: 15,
-  lastView: false,
-  language: "en",
-});
-
-function init() {
-  var map = new longdo.Map({
-    placeholder: document.getElementById("map"),
-  });
-  map.location(longdo.LocationMode.Geolocation);
-  setTimeout(() => {
-    const currUser = useAuthState().getCurrAcc;
-    if (currUser) {
-      let { lon, lat } = map.location();
-      useAuthState().setCurrentGeoLocation(lon, lat);
-    }
-  }, 1000);
-}
-onMounted(() => {
-  init();
-});
-
-map.Overlays.add(new longdo.Marker({ lon: 100.532072, lat: 13.729002 }));
-</script>
 <template>
-  <div :class="[hSizeClass || 'h-[35vh]', 'w-auto']" id="map"></div>
+  <div :class="[hSizeClass || 'h-[40vh]', 'w-auto']" id="map"></div>
 </template>
 <style scoped></style>

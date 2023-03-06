@@ -12,11 +12,13 @@ import * as directives from "vuetify/directives";
 import { createPinia } from "pinia";
 import { VueFire, VueFireAuth } from "vuefire";
 
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import { initializeApp } from "firebase/app";
 
 import "@formkit/themes/genesis";
 import { plugin, defaultConfig } from "@formkit/vue";
 import { firebaseApp, firebaseConfig } from "./firebase.config";
+import { useHotelState } from "./feature-store/hotelState";
 
 const app = createApp(App);
 

@@ -1,5 +1,13 @@
+// @ts-nocheck
+
 import { defineStore } from "pinia";
-import { getDocs, getFirestore } from "firebase/firestore";
+import {
+  Timestamp,
+  doc,
+  getDocs,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../firebase.config";
 
@@ -12,6 +20,7 @@ import {
 import { collection, addDoc } from "firebase/firestore";
 import { getCurrentUser, useCollection, useCurrentUser } from "vuefire";
 import router from "../routes/app-rotues";
+import { Hotel } from "../feature-store/hotelState";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -26,25 +35,32 @@ export type Account = {
   };
 };
 
-type CurrentAccount = UserCollection;
+export type CurrentAccount = UserCollection;
 
-type UserCollection = {
+export type RentalHotelHistory = {
+  rentalId: number;
+  rentalDate: Timestamp;
+  hotel: Hotel;
+};
+
+export type UserCollection = {
   uId: string;
   email: string;
   geolocation: {
     lat: number;
     lng: number;
   };
+  rentalHistory: RentalHotelHistory[];
 };
 
 export const useAuthState = defineStore("authState", {
   state: () => {
     return {
-      currAccount: <CurrentAccount | null>null,
+      currAccount: <CurrentAccount>{},
     };
   },
   getters: {
-    getCurrAcc: (state) => (state.currAccount ? state.currAccount : null),
+    getCurrAcc: (state) => state.currAccount,
   },
   actions: {
     getGeoRequest(): Promise<{ lat: number; lng: number }> {
@@ -79,10 +95,11 @@ export const useAuthState = defineStore("authState", {
         .then(async (userCredential) => {
           const useruid = userCredential.user.uid;
           return await this.getGeoRequest().then(async (geo) => {
-            const createAcc: UserCollection = {
+            const createAcc: CurrentAccount = {
               uId: useruid,
               email,
               geolocation: { lat: geo.lat, lng: geo.lng },
+              rentalHistory: [],
             };
             return await addDoc(collection(db, "Users"), createAcc)
               .then((doc) => {
@@ -172,8 +189,37 @@ export const useAuthState = defineStore("authState", {
         });
     },
 
-    setCurrentGeoLocation(lat: number, lng: number) {
-      this.getCurrAcc!.geolocation = { lat, lng };
+    genRentalHotelHistoryID() {
+      const maxID = this.currAccount.rentalHistory.reduce((acc, obj) => {
+        return obj.rentalId > acc ? obj.rentalId : acc;
+      }, 0);
+      return maxID + 1;
+    },
+
+    async onRentHotel(hotelRented: Hotel) {
+      console.log(this.currAccount);
+      let validRented: RentalHotelHistory = {
+        rentalId: this.genRentalHotelHistoryID(),
+        rentalDate: Timestamp.now(),
+        hotel: hotelRented,
+      };
+      this.currAccount!.rentalHistory.push(validRented);
+      return setDoc(doc(db, "Users", this.currAccount.uId), this.currAccount)
+        .then(() => {
+          console.log(
+            `update rental history state on docs Id ${this.currAccount.uId}`
+          );
+          return true;
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+    },
+
+    setCurrentGeoLocation() {
+      var map = new longdo.Map();
+      let { lon, lat } = map.location();
+      this.getCurrAcc!.geolocation = { lat, lng: lon };
     },
   },
 });

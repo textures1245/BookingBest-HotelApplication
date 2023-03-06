@@ -1,7 +1,7 @@
 <script lang="ts">
 export default {};
 </script>
-<template lang="">
-  <div></div>
+<template>
+  <div>sd</div>
 </template>
 <style lang=""></style>

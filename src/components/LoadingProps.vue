@@ -22,13 +22,11 @@ export default {
 </script>
 
 <template>
-  <div class="w-full">
-    <div class="grid h-[70vh]">
-      <v-img
-        class="place-self-center animate-spin"
-        width="82"
-        src="https://v.fastcdn.co/u/430e104e/57579327-0-Loaders-3.svg"
-      ></v-img>
-    </div>
+  <div class="grid">
+    <v-img
+      class="place-self-center animate-spin"
+      width="82"
+      src="https://v.fastcdn.co/u/430e104e/57579327-0-Loaders-3.svg"
+    ></v-img>
   </div>
 </template>

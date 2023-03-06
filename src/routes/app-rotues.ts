@@ -21,6 +21,16 @@ const fRoutes = featuresRoutes.map((r) => ({
   component: () =>
     Promise.resolve(r.component || import("../components/NotFoundApp.vue")),
   meta: { requiresAuth: true },
+  // children: () =>
+  //   r.children !== undefined
+  //     ? r.children.map((childPath) => ({
+  //         path: childPath.path,
+  //         component: () =>
+  //           Promise.resolve(
+  //             childPath.component || import("../components/NotFoundApp.vue")
+  //           ),
+  //       }))
+  //     : [], // add empty array if no children are present to avoid errors
 }));
 
 const userRoutes = usrRoutes.map((r) => ({
@@ -38,6 +48,62 @@ export const customRoutes = [
     component: () => import("../features/OverviewApp.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    name: "hotel-detail",
+    path: "/hotel-list/:id",
+    component: () => import("../features/HotelDetailApp.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/hotel-book-list",
+    component: () => import("../features/BookListRecordApp.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "my-history-list",
+        component: () =>
+          import("../features/book-list-record-app/HistoryBookListApp.vue"),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "my-book-hotel-list",
+        component: () =>
+          import("../features/book-list-record-app/HotelBookingListApp.vue"),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: "/hotel-broad-forum",
+    component: () => import("../features/BoardForumApp.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "forum-view",
+        component: () =>
+          import("../features/forum-component-app/ForumViewApp.vue"),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "forum-view/:id",
+        component: () =>
+          import("../features/forum-component-app/ForumDetailApp.vue"),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "forum-create",
+        component: () =>
+          import("../features/forum-component-app/ForumCreateApp.vue"),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "user-owner-forum-list",
+        component: () =>
+          import("../features/forum-component-app/UserOwnerForumListApp.vue"),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
 ];
 
 const routes = [...customRoutes, ...userRoutes, ...fRoutes];
@@ -47,8 +113,13 @@ const router = createRouter({
   routes, // short for `routes: routes`
 });
 
-
+let isFirstInitials = false;
 router.beforeEach(async (to, from, next) => {
+  if (!isFirstInitials) {
+    isFirstInitials = true;
+    return next("/app-overview");
+  }
+
   if (to.meta.requiresAuth) {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
