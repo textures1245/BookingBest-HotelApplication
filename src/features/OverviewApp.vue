@@ -77,7 +77,7 @@ export default {
     <LoadingProps class="h-screen"></LoadingProps>
   </div>
   <div v-else>
-    <div id="hero-section" class="!h-[65vh]">
+    <div id="hero-section" class="!h-[72vh]">
       <SearchHotelBar></SearchHotelBar>
       <div class="lg:flex justify-evenly items-center">
         <div class="">

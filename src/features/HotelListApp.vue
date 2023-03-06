@@ -286,92 +286,92 @@ export default {
           </div>
         </div>
       </v-dialog>
-      <div
-        class="lg:block hidden max-h-[70vh] overflow-y-auto col-span-1 place-self-start w-full py-10"
-      >
+      <div class="lg:block hidden col-span-1 place-self-start w-full py-10">
         <div class="">
-          <v-card class="mx-auto" max-width="500">
-            <v-card-text>
-              <FormKit
-                v-model="opts.bedType"
-                type="checkbox"
-                label="เตียงนอน"
-                :options="{
-                  เตียงเดียว: 'เตียงเดียว',
-                  เตียงคู่: 'เตียงคู่',
-                  เตียงสองชั้น: 'เตียงสองชั้น',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
-            <v-card-text>
-              <FormKit
-                v-model="opts.price"
-                type="radio"
-                label="เตียงนอน"
-                :options="{
-                  1500: 'ต่ำกว่า ฿ 1,500',
-                  3000: 'ต่ำกว่า ฿ 3,000',
-                  4500: 'ต่ำกว่า ฿ 4,500',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
-            <v-card-text>
-              <FormKit
-                v-model="opts.isPartner"
-                type="radio"
-                label="Partner"
-                :options="{
-                  1: 'เป็น Partner กับเรา',
-                  0: 'ไม่เป็น Partner กับเรา',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
-            <v-card-text>
-              <FormKit
-                v-model="opts.discount"
-                type="checkbox"
-                label="ส่วนลด"
-                :options="{
-                  10: 'ลด 10%',
-                  20: 'ลด 20%',
-                  30: 'ลด 30%',
-                  40: 'ลด 40%',
-                  50: 'ลด 50%',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
-            <v-card-text>
-              <FormKit
-                v-model="opts.service"
-                type="checkbox"
-                label="Services"
-                :options="{
-                  food: 'มีอาหารให้',
-                  parking: 'มีที่จอดรถส่วนตัวให้',
-                  pet: 'สามารถนำสัตว์เข้าได้',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
-            <v-card-text>
-              <FormKit
-                v-model="opts.rating"
-                type="checkbox"
-                label="Rating"
-                :options="{
-                  1: '1 ดาว',
-                  2: '2 ดาว',
-                  3: '3 ดาว',
-                  4: '4 ดาว',
-                  5: '5 ดาว',
-                }"
-                help="Configure your car’s trim options"
-              />
-            </v-card-text>
+          <v-card elevation="6" class="mx-auto" max-width="300">
+            <div class="flex flex-col items-center">
+              <v-card-text >
+                <FormKit
+                  v-model="opts.bedType"
+                  type="checkbox"
+                  label="เตียงนอน"
+                  :options="{
+                    เตียงเดียว: 'เตียงเดียว',
+                    เตียงคู่: 'เตียงคู่',
+                    เตียงสองชั้น: 'เตียงสองชั้น',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+              <v-card-text>
+                <FormKit
+                  v-model="opts.price"
+                  type="radio"
+                  label="เตียงนอน"
+                  :options="{
+                    1500: 'ต่ำกว่า ฿ 1,500',
+                    3000: 'ต่ำกว่า ฿ 3,000',
+                    4500: 'ต่ำกว่า ฿ 4,500',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+              <v-card-text>
+                <FormKit
+                  v-model="opts.isPartner"
+                  type="radio"
+                  label="Partner"
+                  :options="{
+                    1: 'เป็น Partner กับเรา',
+                    0: 'ไม่เป็น Partner กับเรา',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+              <v-card-text>
+                <FormKit
+                  v-model="opts.discount"
+                  type="checkbox"
+                  label="ส่วนลด"
+                  :options="{
+                    10: 'ลด 10%',
+                    20: 'ลด 20%',
+                    30: 'ลด 30%',
+                    40: 'ลด 40%',
+                    50: 'ลด 50%',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+              <v-card-text>
+                <FormKit
+                  v-model="opts.service"
+                  type="checkbox"
+                  label="Services"
+                  :options="{
+                    food: 'มีอาหารให้',
+                    parking: 'มีที่จอดรถส่วนตัวให้',
+                    pet: 'สามารถนำสัตว์เข้าได้',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+              <v-card-text>
+                <FormKit
+                  v-model="opts.rating"
+                  type="checkbox"
+                  label="Rating"
+                  :options="{
+                    1: '1 ดาว',
+                    2: '2 ดาว',
+                    3: '3 ดาว',
+                    4: '4 ดาว',
+                    5: '5 ดาว',
+                  }"
+                  help="Configure your car’s trim options"
+                />
+              </v-card-text>
+            </div>
             <v-card-actions>
               <v-btn
                 @click="onFilterAction()"

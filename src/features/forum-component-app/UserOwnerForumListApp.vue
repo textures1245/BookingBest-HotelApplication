@@ -56,15 +56,15 @@ export default {
           - แก้ไข เพิ่ม อัปเดต หรือลบได้ทุกเมื่อ
           แบ่งปันประสบการณ์ของคุณกับโลกวันนี้!
         </p>
-        <lottie-player
-          src="https://assets5.lottiefiles.com/packages/lf20_4bqzai4k.json"
-          background="transparent"
-          speed="1"
-          style="width: 300px; height: 300px"
-          loop
-          autoplay
-        ></lottie-player>
       </article>
+      <lottie-player
+        src="https://assets5.lottiefiles.com/packages/lf20_4bqzai4k.json"
+        background="transparent"
+        speed="1"
+        style="width: 300px; height: 300px"
+        loop
+        autoplay
+      ></lottie-player>
     </div>
     <hr class="my-4" />
     <v-toolbar class="bg-secondary-content !text-secondary" rounded>
