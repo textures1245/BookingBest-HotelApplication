@@ -25,7 +25,6 @@ export default {
       } else {
         map.location(longdo.LocationMode.Geolocation);
       }
-
     }
     return { map, init };
   },

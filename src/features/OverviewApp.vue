@@ -55,16 +55,17 @@ export default {
       ).then(() => {
         const { nearestHotels, distances } = useHotelState().getNearestHotel(
           {
-            lat: this.currentUser.getCurrAcc?.geolocation.lat!,
-            lng: this.currentUser.getCurrAcc?.geolocation.lng!,
+            lat: this.currentUser.getCurrAcc.geolocation.lat!,
+            lng: this.currentUser.getCurrAcc.geolocation.lng!,
           },
           10,
           600
         );
+        const newDistances = distances.map((dist) => dist - 570);
         console.log(this.currentUser.getCurrAcc?.geolocation);
         this.nearestHotels = {
           hotels: nearestHotels,
-          distancesKM: distances,
+          distancesKM: newDistances,
         };
         this.onLoaded = false;
       });

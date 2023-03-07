@@ -210,7 +210,7 @@ export default {
                 <FormKit
                   v-model="opts.price"
                   type="radio"
-                  label="เตียงนอน"
+                  label="ราคา"
                   :options="{
                     1500: 'ต่ำกว่า ฿ 1,500',
                     3000: 'ต่ำกว่า ฿ 3,000',
@@ -307,7 +307,7 @@ export default {
                 <FormKit
                   v-model="opts.price"
                   type="radio"
-                  label="เตียงนอน"
+                  label="ราคา"
                   :options="{
                     1500: 'ต่ำกว่า ฿ 1,500',
                     3000: 'ต่ำกว่า ฿ 3,000',
