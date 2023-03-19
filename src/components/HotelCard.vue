@@ -97,7 +97,7 @@ export default {
 };
 </script>
 <template>
-  <div class="mx-auto md:flex justify-center">
+  <div class="mx-auto flex justify-center">
     <v-card
       elevation="2"
       class="!duration-300  w-auto xs:w-8/12 sm:w-10/12 md:w-full transition hover:shadow-xl hover:-translate-y-3"
