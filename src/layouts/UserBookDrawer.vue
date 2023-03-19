@@ -1,5 +1,6 @@
 <script lang="ts">
 import { useAuthState } from "../auth/authState";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 import { usePathState } from "../shared-store/pathState";
 export default {
   setup() {
@@ -10,7 +11,20 @@ export default {
         path: "/hotel-book-list/my-history-list",
       },
     ];
-    return { drawerPaths, currentUser: useAuthState().getCurrAcc };
+    return {
+      drawerPaths,
+      currentUser: useAuthState().getCurrAcc,
+    };
+  },
+  data() {
+    return {
+      display: useDisplay(),
+    };
+  },
+  computed: {
+    isMdScreen() {
+      return this.display.mdAndDown;
+    },
   },
 };
 </script>
@@ -23,7 +37,7 @@ export default {
         rail
         permanent
         expand-on-hover
-        location="left"
+        :location="isMdScreen ? 'top' : 'left'"
       >
         <template v-slot:prepend>
           <v-list-item

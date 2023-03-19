@@ -182,6 +182,8 @@ export const useAuthState = defineStore("authState", {
     async onSignOut() {
       return signOut(auth)
         .then(() => {
+          this.currAccount = null;
+          console.log(this.currAccount);
           return true;
         })
         .catch((error) => {

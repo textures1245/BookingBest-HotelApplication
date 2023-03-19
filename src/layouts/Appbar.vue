@@ -6,6 +6,7 @@ import { useAuthState } from "../auth/authState";
 import Swal from "sweetalert2";
 import { useHotelState } from "../feature-store/hotelState";
 export default {
+  props: { isAuth: Boolean },
   setup() {
     return {
       app: {
@@ -101,6 +102,7 @@ export default {
       <v-spacer></v-spacer>
 
       <v-btn
+        v-if="isAuth"
         :to="fp.path"
         class="!text-primary-focus mr-2"
         v-for="fp in featurePaths"
@@ -126,12 +128,16 @@ export default {
             </div>
           </template>
           <v-list class="mt-2">
-            <v-list-item v-for="(userPath, i) in userPaths" :key="i">
+            <v-list-item
+              v-if="!isAuth"
+              v-for="(userPath, i) in userPaths"
+              :key="i"
+            >
               <router-link :to="userPath.path">
                 <v-list-item-title>{{ userPath.title }}</v-list-item-title>
               </router-link>
             </v-list-item>
-            <v-list-item>
+            <v-list-item v-else>
               <v-list-item-title
                 class="cursor-pointer"
                 @click="() => onSignOut()"

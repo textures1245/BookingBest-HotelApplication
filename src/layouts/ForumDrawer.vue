@@ -1,6 +1,7 @@
 <script lang="ts">
 import { usePathState } from "../shared-store/pathState";
 import { useAuthState } from "../auth/authState";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 export default {
   setup() {
     const drawerPaths = [
@@ -15,7 +16,20 @@ export default {
         path: "/hotel-broad-forum/user-owner-forum-list",
       },
     ];
-    return { drawerPaths, currentUser: useAuthState().currAccount };
+    return {
+      drawerPaths,
+      currentUser: useAuthState().currAccount,
+    };
+  },
+  data() {
+    return {
+      display: useDisplay(),
+    };
+  },
+  computed: {
+    isMdScreen() {
+      return this.display && this.display.mdAndDown;
+    },
   },
 };
 </script>
@@ -28,7 +42,7 @@ export default {
         rail
         permanent
         expand-on-hover
-        location="left"
+        :location="isMdScreen ? 'top' : 'left'"
       >
         <template v-slot:prepend>
           <v-list-item

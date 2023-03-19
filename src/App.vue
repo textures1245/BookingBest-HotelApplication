@@ -1,9 +1,10 @@
 <script lang="ts">
 import Appbar from "./layouts/Appbar.vue";
-import { useAuthState } from "./auth/authState";
+import { useAuthState, CurrentAccount } from "./auth/authState";
 import Swal from "sweetalert2";
 import { useHotelState } from "./feature-store/hotelState";
 import { useForumState } from "./feature-store/forumState";
+import { ref, watch } from "vue";
 
 export default {
   components: { Appbar },
@@ -32,15 +33,25 @@ export default {
       });
     }
   },
-
+  data() {
+    return {
+      isAuth: ref(false),
+    };
+  },
   methods: {},
 };
+</script>
+<script setup lang="ts">
+const isCurrentAuth = ref(false);
+watch(useAuthState(), (newValue) => {
+  isCurrentAuth.value = newValue.currAccount != undefined ? true : false;
+});
 </script>
 
 <template>
   <v-app class="overflow-y-auto thai-font eng-font">
     <v-layout>
-      <Appbar></Appbar>
+      <Appbar :is-auth="isCurrentAuth"></Appbar>
       <v-main
         class="h-full w-full overflow-y-hidden bg-base-100 thai-font eng-font"
       >

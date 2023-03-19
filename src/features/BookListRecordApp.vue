@@ -8,7 +8,7 @@ export default {
   <div>
     <UserDrawer>
       <template #main>
-        <v-main class="w-full flex justify-center">
+        <v-main class="w-full flex">
           <v-container>
             <div class="h-screen overflow-y-auto">
               <router-view></router-view>

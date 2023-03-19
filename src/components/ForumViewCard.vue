@@ -70,17 +70,14 @@ export default {
 };
 </script>
 <template>
-  <v-card
-    class="my-10"
-    :class="' max-h-[600px] lg:!min-h-[200px] lg:!max-h-[200px]'"
-  >
+  <v-card class="my-10" :class="' max-h-[600px] !h-full '">
     <div class="grid lg:grid-cols-6">
       <div class="md:col-span-2 bg-base-200">
         <v-carousel
           cycle
           hide-delimiter-background
           :hide-delimiters="true"
-          height="190"
+          height="300"
           show-arrows="hover"
         >
           <v-carousel-item
@@ -91,8 +88,8 @@ export default {
           </v-carousel-item>
         </v-carousel>
       </div>
-      <v-card class="lg:col-span-3 !rounded-none">
-        <div class="grid lg:grid-rows-3 gap-1">
+      <v-card  class="lg:col-span-3 md:!h-[300px] !rounded-none">
+        <div class="grid md:!h-[300px] lg:grid-rows-4 gap-1">
           <v-card-text :border="false" class="row-span-2">
             <div id="topic">
               <h1 class="text-xl font-semibold">
@@ -113,6 +110,7 @@ export default {
               </div>
             </div>
           </v-card-text>
+          <div class="row-span-2"></div>
           <v-toolbar class="row-span-1">
             <v-toolbar-title>
               <div class="flex items-center gap-2">
@@ -182,7 +180,9 @@ export default {
           </v-tooltip>
         </div>
         <div class="md:place-self-end m-4 md:m-2 mr-2">
-          <p class="flex justify-center md:justify-end text-2xl text-semibold">
+          <p
+            class="flex sm:justify-center md:justify-end text-2xl text-semibold"
+          >
             {{ reviewOrder(forumProp.stars) }}
           </p>
           <v-rating

@@ -99,7 +99,7 @@ export default {
         }
         if (
           filterOpts.isPartner !== null &&
-          hotel.partner.isPartner == filterOpts.isPartner
+          hotel.partner.isPartner != filterOpts.isPartner
         ) {
           // Check if the isPartner property of the hotel object matches the isPartner value in the opts object
           return false;
@@ -177,7 +177,7 @@ export default {
       </div>
     </div>
     <div
-      class="grid grid-cols-1 place-items-center lg:grid-cols-3 overflow-x-auto py-10"
+      class="grid grid-cols-1  place-items-center   lg:grid-cols-3 overflow-x-auto py-10"
     >
       <v-btn
         @click="() => (dialog = true)"
@@ -290,7 +290,7 @@ export default {
         <div class="">
           <v-card elevation="6" class="mx-auto" max-width="300">
             <div class="flex flex-col items-center">
-              <v-card-text >
+              <v-card-text>
                 <FormKit
                   v-model="opts.bedType"
                   type="checkbox"
@@ -393,7 +393,7 @@ export default {
       </div>
       <div
         v-else
-        class="col-span-2 flex flex-col gap-10 min-w-[800px] max-w-[800px]"
+        class="col-span-2 px-2 flex flex-col gap-10 w-full md:min-w-[800px] md:max-w-[800px]"
       >
         <div v-for="hotel in hotelProps">
           <HotelCard card-type="Visit" :hotel-model="hotel"></HotelCard>

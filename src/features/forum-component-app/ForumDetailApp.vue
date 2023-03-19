@@ -139,7 +139,6 @@ export default {
     //   return { notAgreed, Agreed };
     // },
 
-    //- if string is '' what happens if !!string
     async onPostComment() {
       if (
         this.quillContent === "<p><br></p>" ||
@@ -193,7 +192,7 @@ export default {
   <div v-else class="">
     <v-btn
       :to="`/hotel-list/${forumProp.hotelRef.hotelId}`"
-      class="!absolute !top-5 !right-10 !z-10 bg-primary"
+      class="!absolute !top-15 !right-10 !z-10 bg-primary"
       >เยี่ยมชมหอพักนี้</v-btn
     >
     <v-breadcrumbs class="text-sm" :items="breadcrumbItems">
@@ -206,11 +205,9 @@ export default {
     ></ImageCarouselCard>
 
     <section class="my-5">
-      <v-card min-height="500" class="overflow-x-auto !grid grid-rows-4">
+      <v-card min-height="500" class="w-auto overflow-x-auto !grid grid-rows-4">
         <div class="row-span-1">
-          <v-toolbar
-            :title="`การรีวิวนี้ถูกอ้างอิงจาก &quot;${forumProp.hotelRef.name}&quot;`"
-          >
+          <v-toolbar>
             <template v-slot:append>
               <div class="flex flex-col items-center mt-1">
                 <p class="-mb-3">{{ reviewOrder }}</p>
@@ -223,10 +220,17 @@ export default {
                 ></v-rating>
               </div>
             </template>
+            <template v-slot:title>
+              <h1 class="text-sm md:text-lg">
+                {{
+                  `การรีวิวนี้ถูกอ้างอิงจาก &quot;${forumProp.hotelRef.name}&quot;`
+                }}
+              </h1>
+            </template>
           </v-toolbar>
         </div>
         <v-card-text class="!row-span-3 !place-content-center">
-          <article class="prose ml-10 -mt-5">
+          <article class="prose prose-sm ml-10 -mt-5">
             <h1>{{ forumProp.title }}</h1>
             <blockquote v-html="forumProp.desc"></blockquote>
           </article>

@@ -30,7 +30,7 @@ export default {
       </div>
     </div>
     <hr class="mb-6" />
-    <div v-for="hotelHistory in hotelHistoryState" class="mb-6 mr-2">
+    <div v-for="hotelHistory in hotelHistoryState" class="w-auto mb-6 mr-2">
       <HotelCard
         :rented-date="hotelHistory.rentalDate"
         card-type="History"

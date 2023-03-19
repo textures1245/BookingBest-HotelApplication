@@ -468,7 +468,12 @@ export default {
                     </template>
                     <div class="flex flex-col items-start">
                       <p class="text-xl">{{ reviewOrder }}</p>
-                      <p>{{ hotel.rating.reviews.length }} ความคิดเห็น</p>
+                      <v-rating
+                      size="small"
+                        color="yellow-darken-3"
+                        v-model="hotel.rating.stars"
+                        density="compact"
+                      ></v-rating>
                     </div>
                   </v-btn>
                 </section>
@@ -513,7 +518,10 @@ export default {
             ดูข้อเสนอการจอง
 
             <v-dialog v-model="togglePaymentDialog" activator="parent">
-              <PaymentDialog :curr-account="currAccount" :hotel-prop="hotel"></PaymentDialog>
+              <PaymentDialog
+                :curr-account="currAccount"
+                :hotel-prop="hotel"
+              ></PaymentDialog>
             </v-dialog>
           </v-btn>
         </div>
